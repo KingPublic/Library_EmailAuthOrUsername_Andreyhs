@@ -9,7 +9,7 @@
 <body>
 
 <div class="container mt-5">
-    <h1>Welcome, {{ session('user')['name'] }}!</h1>
+    <h1>Welcome, {{ session('user')['name']?? 'Librarian' }}</h1>
     <p>You are logged in as a Librarian.</p>
 
     <div class="card mt-4">

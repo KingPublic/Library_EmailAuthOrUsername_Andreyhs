@@ -54,6 +54,21 @@ Route::get('login', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('login', [AuthController::class, 'login'])->name('auth.logins');
 Route::post('logout', [AuthController::class, 'logout'])->name('auth.logout');
 
+// testing ini
+Route::get('/admin/dashboard', function () {
+    return view('admin.dashboard'); // Mengarah ke resources/views/admin/dashboard.blade.php
+})->name('admin.dashboard');
+
+// Rute Librarian
+Route::get('/librarian/dashboard', function () {
+    return view('librarian.dashboard'); // Mengarah ke resources/views/librarian/dashboard.blade.php
+})->name('librarian.dashboard');
+
+// Rute Guest
+Route::get('/guest/dashboard', function () {
+    return view('guest.dashboard'); // Mengarah ke resources/views/guest/dashboard.blade.php
+})->name('guest.dashboard');
+
 Route::get('admin/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
 Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
 

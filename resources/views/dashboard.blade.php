@@ -67,6 +67,25 @@
                             </div>
                         </form>
 
+                        <div class="card-body text-center">
+                        <p>Pilih jenis pengguna untuk masuk:</p>
+                        
+                        <!-- Tombol Redirect Admin -->
+                        <a href="{{ route('admin.dashboard') }}" class="btn btn-primary mb-3 w-100">
+                            Login as Admin
+                        </a>
+
+                        <!-- Tombol Redirect Librarian -->
+                         <!-- baru librarian yang bekerja admin sama guest rusak lagi -->
+                        <a href="{{ route('librarian.dashboard') }}" class="btn btn-secondary mb-3 w-100">
+                            Login as Librarian
+                        </a>
+
+                        <!-- Tombol Redirect Guest -->
+                        <a href="{{ route('guest.login') }}" class="btn btn-success w-100">
+                            Login as Guest
+                        </a>
+
 
                     <!-- Tombol Login sebagai Tamu -->
                     
