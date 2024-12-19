@@ -55,21 +55,22 @@ Route::post('login', [AuthController::class, 'login'])->name('auth.logins');
 Route::post('logout', [AuthController::class, 'logout'])->name('auth.logout');
 
 // testing ini
-Route::get('/admin/dashboard', function () {
-    return view('admin.dashboard'); // Mengarah ke resources/views/admin/dashboard.blade.php
-})->name('admin.dashboard');
 
 // Rute Librarian
 Route::get('/librarian/dashboard', function () {
     return view('librarian.dashboard'); // Mengarah ke resources/views/librarian/dashboard.blade.php
 })->name('librarian.dashboard');
 
-// Rute Guest
-Route::get('/guest/dashboard', function () {
-    return view('guest.dashboard'); // Mengarah ke resources/views/guest/dashboard.blade.php
-})->name('guest.dashboard');
+Route::get('/admin/dashboard', function () {
+    return redirect('http://127.0.0.1:8000/admin/dashboard'); // Ubah ke URL tujuan Anda
+})->name('admin.dashboard');
 
-Route::get('admin/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
+// Rute Guest - Redirect langsung ke URL lain
+Route::get('/guest/login', function () {
+    return redirect('http://127.0.0.1:8000/guest/login'); // Ubah ke URL tujuan Anda
+})->name('guest.login');
+
+Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
 Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
 
 // Manage Librarians Routes
