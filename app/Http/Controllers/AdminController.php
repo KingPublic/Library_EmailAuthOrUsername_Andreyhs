@@ -69,7 +69,22 @@ class AdminController extends Controller
 
         return view('admin.dashboard', compact('pendingApprovals', 'librarians'));
     }
+    public function index()
+    {
+         $user = session('user');  // Get user from session
+        
+        if (!$user || $user['role'] !== 'admin') {
+            return redirect()->route('login')->with('error', 'You are not authorized to access this page.');
+        }
 
+        // Get all pending inventory approvals
+        $pendingApprovals = InventoryApproval::where('status', 'pending')->get();
+
+        // Get all librarians
+        $librarians = User::where('role', 'librarian')->get();
+
+        return view('admin.dashboard', compact('pendingApprovals', 'librarians'));
+    }
     // Create a new librarian
     public function createLibrarian()
     {

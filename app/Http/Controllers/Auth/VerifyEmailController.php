@@ -3,43 +3,26 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Providers\RouteServiceProvider;
 use Illuminate\Auth\Events\Verified;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
+use Illuminate\Http\RedirectResponse;
 
 class VerifyEmailController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('auth');
-    }
-
-    public function notice()
-    {
-        return view('auth.verify-email');
-    }
-
-    public function verify(Request $request)
+    /**
+     * Mark the authenticated user's email address as verified.
+     */
+    public function __invoke(EmailVerificationRequest $request): RedirectResponse
     {
         if ($request->user()->hasVerifiedEmail()) {
-            return redirect()->route('home')->with('message', 'Email Anda sudah diverifikasi.');
+            return redirect()->intended(RouteServiceProvider::HOME.'?verified=1');
         }
 
         if ($request->user()->markEmailAsVerified()) {
             event(new Verified($request->user()));
         }
 
-        return redirect()->route('home')->with('success', 'Email berhasil diverifikasi.');
-    }
-
-    public function resend(Request $request)
-    {
-        if ($request->user()->hasVerifiedEmail()) {
-            return redirect()->route('home');
-        }
-
-        $request->user()->sendEmailVerificationNotification();
-
-        return back()->with('success', 'Link verifikasi telah dikirim ke email Anda.');
+        return redirect()->intended(RouteServiceProvider::HOME.'?verified=1');
     }
 }

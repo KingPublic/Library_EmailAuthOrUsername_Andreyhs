@@ -1,7 +1,8 @@
 <?php
 
-use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\LibrarianController;
 use App\Http\Controllers\BukuController;
@@ -10,20 +11,51 @@ use App\Http\Controllers\KoranController;
 use App\Http\Controllers\CdController;
 use App\Http\Controllers\SkripsiController;
 use App\Http\Controllers\GuestController;
-use App\Http\Controllers\RegisterController;
+use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\VerifyEmailController;
 
-// Home route - redirects to login page
+/*
+|--------------------------------------------------------------------------
+| Web Routes
+|--------------------------------------------------------------------------
+|
+| Here is where you can register web routes for your application. These
+| routes are loaded by the RouteServiceProvider and all of them will
+| be assigned to the "web" middleware group. Make something great!
+|
+*/
+
 Route::get('/', function () {
-    return view('auth.login');
+    return view('welcome');
 });
+
+Route::get('/dashboard', function () {
+    return view('dashboard');
+})->middleware(['auth', 'verified'])->name('dashboard');
+
+Route::post('/dashboard', [AuthController::class, 'store']);
+
+Route::get('/register',[RegisteredUserController::class])->name('register');
+Route::post('/register', [RegisteredUserController::class, 'store']);
+
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
+
+// Route::post('/dashboard', [AuthController::class, 'checkRole'])->middleware(['auth', 'verified'])->name('dashboard');
+
+Route::post('login', [AuthController::class, 'login'])->name('auth.login');
+
 
 // Authentication Routes (Login and Logout)
 Route::get('login', [AuthController::class, 'showLoginForm'])->name('login');
-Route::post('login', [AuthController::class, 'login'])->name('auth.login');
+Route::post('login', [AuthController::class, 'login'])->name('auth.logins');
 Route::post('logout', [AuthController::class, 'logout'])->name('auth.logout');
 
 Route::get('admin/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
+Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
 
 // Manage Librarians Routes
 Route::get('admin/manage-librarians', [AdminController::class, 'manageLibrarians'])->name('admin.manage-librarians');
@@ -150,17 +182,14 @@ Route::get('/email/verify/{id}/{hash}', [VerifyEmailController::class, 'verify']
 Route::post('/email/resend', [VerifyEmailController::class, 'resend'])
     ->middleware(['auth', 'throttle:6,1'])->name('verification.resend');
 
-// Guest Login Routes
-Route::get('/guest/login', [GuestController::class, 'showGuestLoginForm'])->name('guest.login');
-Route::post('/guest/login', [GuestController::class, 'store'])->name('guest.store');
-Route::get('/guest/dashboard', [GuestController::class, 'guestDashboard'])->middleware('guest')->name('guest.dashboard');
-
-// Additional logic for general access by guests
-Route::get('/guest/resources', [GuestController::class, 'viewResources'])->middleware('guest')->name('guest.resources');
-Route::post('/guest/reservation', [GuestController::class, 'makeReservation'])
-    ->middleware('guest')->name('guest.reservation');
-Route::get('/guest/dashboard', [GuestController::class, 'showGuestDashboard'])->name('guest_dashboard');
+    Route::middleware(['guest'])->group(function () {
+        Route::get('/guest-login', [GuestController::class, 'showGuestLoginForm'])->name('guest.login');
+        Route::post('/guest-login', [GuestController::class, 'store']);
+        Route::get('/guest-dashboard', [GuestController::class, 'showGuestDashboard'])->name('guest.dashboard');
+    });
 
 Route::get('/email/verify', function () {
     return view('auth.verify-email');
 })->middleware('auth')->name('verification.notice');
+
+require __DIR__.'/auth.php';

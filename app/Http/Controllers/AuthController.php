@@ -5,14 +5,54 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
     
 class AuthController extends Controller
     {
         // Menampilkan halaman login
         public function showLoginForm()
         {
-            return view('auth.login');
+            return view('dashboard');
         }
+
+        public function dashboard()
+        {
+            return view('dashboard');
+        }
+
+        
+    public function store(Request $request)
+    {
+        // Validasi input dari form
+        $validated = $request->validate([
+            'email_or_username' => 'required|string',
+            'password' => 'required|string|min:8',
+        ]);
+
+        // Mencari user berdasarkan email atau username
+        $user = User::where('email', $validated['email_or_username'])
+                    ->orWhere('username', $validated['email_or_username'])
+                    ->first();
+
+        if ($user && Hash::check($validated['password'], $user->password)) {
+            // Jika user ditemukan dan password cocok
+            Auth::login($user);
+
+            // Periksa peran pengguna dan arahkan ke controller yang sesuai
+            if ($user->role == 'admin') {
+                return redirect()->action([AdminController::class, 'index']);
+            } elseif ($user->role == 'librarian') {
+                return redirect()->action([LibrarianController::class, 'index']);
+            } else {
+                // Jika peran tidak dikenali, arahkan ke halaman default
+                return redirect()->route('dashboard');
+            }
+        } else {
+            // Jika login gagal, beri pesan error dan redirect kembali
+            return back()->withErrors(['email_or_username' => 'Invalid credentials.'])->withInput();
+        }
+    }
+
     
         // Menangani proses login
         public function login(Request $request)
